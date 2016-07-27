@@ -1,0 +1,35 @@
+{
+  "name": "dynamoed",
+  "version": "0.1.0",
+  "description": "Light dynamodb wrapper to take the pain out of terrible AWS params",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha test/acceptance test/unit --recursive",
+    "lint": "node_modules/.bin/standard **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/18f/dynomoed.git"
+  },
+  "keywords": [
+    "dynamodb",
+    "aws-sdk",
+    "thin client",
+    "promise"
+  ],
+  "author": "Kane Baccigalupi: kane.baccigalupi@gsa.gov",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/18f/dynomoed/issues"
+  },
+  "homepage": "https://github.com/18f/dynomoed#readme",
+  "devDependencies": {
+    "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.4.10",
+    "bluebird": "^3.4.1",
+    "migrate": "^0.2.3",
+    "standard": "^7.1.2"
+  }
+}
