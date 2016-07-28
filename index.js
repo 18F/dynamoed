@@ -48,8 +48,17 @@ class CreateTableParams {
     this.params.KeySchema             = this.keySchema()
     this.params.AttributeDefinitions  = this.attributeDefinitions()
 
+    this.addLocalIndexes();
+
     return this.params
   }
+
+  addLocalIndexes() {
+    if (!this.params.localIndexes) { return }
+    //this.params.LocalIndexes = this.localIndexes();
+  }
+
+
 
   provisionedThroughput() {
     return Object.assign(
