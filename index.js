@@ -2,8 +2,11 @@
 
 const AWS     = require('aws-sdk')
 const Promise = require('bluebird')
+AWS.config.setPromisesDependency(Promise)
 
-AWS.config.setPromisesDependency(Promise);
+const serializers = require('./lib/serializers')
+const keySchema   = serializers.keySchema
+const throughput  = serializers.throughput
 
 module.exports = function dynamoed(connectionParams) {
   const client = new AWS.DynamoDB(connectionParams)
@@ -44,8 +47,8 @@ class CreateTableParams {
 
   serialize() {
     this.params.TableName             = this.name
-    this.params.ProvisionedThroughput = this.provisionedThroughput()
-    this.params.KeySchema             = this.keySchema()
+    this.params.ProvisionedThroughput = throughput(this.attributes.throughput)
+    this.params.KeySchema             = keySchema(this.attributes.key)
     this.params.AttributeDefinitions  = this.attributeDefinitions()
 
     this.addLocalIndexes();
@@ -56,33 +59,6 @@ class CreateTableParams {
   addLocalIndexes() {
     if (!this.params.localIndexes) { return }
     //this.params.LocalIndexes = this.localIndexes();
-  }
-
-
-
-  provisionedThroughput() {
-    return Object.assign(
-      {},
-      this.defaultProvisionedThroughput(),
-      this.customizedThroughput()
-    )
-  }
-
-  keySchema() {
-    let params = []
-    this.attributes.key.map((keyDescription, index) => {
-      let name = Object.keys(keyDescription)[0];
-      let keyType = keyDescription.type || typeForIndex(index)
-      let keyParam = {
-        AttributeName: name,
-        KeyType: keyType.toUpperCase()
-      }
-      params.push(keyParam)
-    })
-    params.sort((a, b) => {
-      return a.KeyType < b.KeyType ? -1 : 1
-    })
-    return params
   }
 
   attributeDefinitions() {
@@ -96,25 +72,6 @@ class CreateTableParams {
       }
       params.push(attributeParam)
     })
-    return params
-  }
-
-  defaultProvisionedThroughput() {
-    return {
-      ReadCapacityUnits: 1,
-      WriteCapacityUnits: 1
-    }
-  }
-
-  customizedThroughput() {
-    let attributes = this.attributes.throughput || {}
-    let params = {}
-    if ( attributes.read) {
-      params.ReadCapacityUnits = attributes.read
-    }
-    if (attributes.write) {
-      params.WriteCapacityUnits = attributes.write
-    }
     return params
   }
 }
