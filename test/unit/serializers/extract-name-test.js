@@ -4,7 +4,7 @@ const assert    = require('assert')
 
 const extractName = require('../../../lib/serializers/extract-name')
 
-describe('extractName', () => {
+describe('serializer: extractName', () => {
   let description, serialized
 
   it('chooses the first non-type key', () => {

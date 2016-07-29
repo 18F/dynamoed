@@ -3,7 +3,7 @@
 const assert      = require('assert')
 const throughput  = require('../../../lib/serializers/throughput')
 
-describe('throughput', () => {
+describe('serializer: throughput', () => {
   let serialized
 
   describe('without customization', () => {

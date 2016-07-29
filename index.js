@@ -1,14 +1,11 @@
 'use strict'
 
-const AWS     = require('aws-sdk')
-const Promise = require('bluebird')
+const AWS           = require('aws-sdk')
+const Promise       = require('bluebird')
 AWS.config.setPromisesDependency(Promise)
 
-const serializers = require('./lib/serializers')
-
-const keySchema   = serializers.keySchema
-const throughput  = serializers.throughput
-const attributeDefinitions  = serializers.attributeDefinitions
+const serializers   = require('./lib/serializers')
+const parsers       = require('./lib/parsers')
 
 module.exports = function dynamoed(connectionParams) {
   const client = new AWS.DynamoDB(connectionParams)
@@ -50,9 +47,9 @@ class CreateTableParams {
     let params = {}
 
     params.TableName             = this.name
-    params.ProvisionedThroughput = throughput(this.attributes.throughput)
-    params.KeySchema             = keySchema(this.attributes.key)
-    params.AttributeDefinitions  = attributeDefinitions(this.attributes.key)
+    params.ProvisionedThroughput = serializers.throughput(this.attributes.throughput)
+    params.KeySchema             = serializers.keySchema(this.attributes.key)
+    params.AttributeDefinitions  = serializers.attributeDefinitions(this.attributes.key)
 
     return params
   }
@@ -67,7 +64,7 @@ class TableAttributes {
     let attributes = {}
     attributes.name        = this.name()
     attributes.throughput  = this.throughput()
-    attributes.key         = this.key()
+    attributes.key         = parsers.key(this.params.KeySchema, this.params.AttributeDefinitions)
 
     return attributes
   }
@@ -86,32 +83,5 @@ class TableAttributes {
       read: provisioned.ReadCapacityUnits,
       write: provisioned.WriteCapacityUnits
     }
-  }
-
-  key() {
-    let key = []
-    let schema = this.params.KeySchema || []
-    schema.forEach((keyDescription) => {
-      let name = keyDescription.AttributeName
-      let keyType = keyDescription.KeyType.toLowerCase()
-      let repackaged = {type: keyType}
-      let dataType = this.typeOf(name)
-      repackaged[name] = dataType
-      key.push(repackaged)
-    })
-    return key
-  }
-
-  typeOf(name) {
-    let description = this.params.AttributeDefinitions.find((attributeDescription) => {
-      return attributeDescription.AttributeName === name
-    })
-    let awsType = description && description.AttributeType
-    return {
-      B: 'binary',
-      BOOL: 'boolean',
-      N: 'number',
-      S: 'string'
-    }[awsType] || awsType
   }
 }

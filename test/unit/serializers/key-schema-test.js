@@ -4,7 +4,7 @@ const assert    = require('assert')
 
 const keySchema = require('../../../lib/serializers/key-schema')
 
-describe('keySchema', () => {
+describe('serializer: keySchema', () => {
   let description, serialized
 
   it('comes up with default types', () => {
