@@ -5,8 +5,10 @@ const Promise = require('bluebird')
 AWS.config.setPromisesDependency(Promise)
 
 const serializers = require('./lib/serializers')
+
 const keySchema   = serializers.keySchema
 const throughput  = serializers.throughput
+const attributeDefinitions  = serializers.attributeDefinitions
 
 module.exports = function dynamoed(connectionParams) {
   const client = new AWS.DynamoDB(connectionParams)
@@ -42,36 +44,16 @@ class CreateTableParams {
   constructor(name, attributes) {
     this.name = name
     this.attributes = attributes
-    this.params = {}
   }
 
   serialize() {
-    this.params.TableName             = this.name
-    this.params.ProvisionedThroughput = throughput(this.attributes.throughput)
-    this.params.KeySchema             = keySchema(this.attributes.key)
-    this.params.AttributeDefinitions  = this.attributeDefinitions()
+    let params = {}
 
-    this.addLocalIndexes();
+    params.TableName             = this.name
+    params.ProvisionedThroughput = throughput(this.attributes.throughput)
+    params.KeySchema             = keySchema(this.attributes.key)
+    params.AttributeDefinitions  = attributeDefinitions(this.attributes.key)
 
-    return this.params
-  }
-
-  addLocalIndexes() {
-    if (!this.params.localIndexes) { return }
-    //this.params.LocalIndexes = this.localIndexes();
-  }
-
-  attributeDefinitions() {
-    let params = []
-    this.attributes.key.map((keyDescription) => {
-      let name = Object.keys(keyDescription)[0]
-      let type = typeForValue(keyDescription[name])
-      let attributeParam = {
-        AttributeName: name,
-        AttributeType: type
-      }
-      params.push(attributeParam)
-    })
     return params
   }
 }
@@ -132,17 +114,4 @@ class TableAttributes {
       S: 'string'
     }[awsType] || awsType
   }
-}
-
-function typeForIndex(index) {
-  return index === 0 ? 'HASH' : 'RANGE'
-}
-
-function typeForValue(value) {
-  return {
-    binary: 'B',
-    boolean: 'BOOL',
-    number: 'N',
-    string: 'S'
-  }[value] || value
 }
