@@ -6,7 +6,7 @@ const connectionParams  = require('../support/connection-params')
 
 let dynamoed            = config(connectionParams)
 
-describe('Acceptance: create, update and delete tables', () => {
+describe('Acceptance: create, delete and list tables', () => {
   beforeEach((done) => {
     dynamoed()
       .deleteTable('users')
@@ -52,6 +52,26 @@ describe('Acceptance: create, update and delete tables', () => {
         .deleteTable('users')
         .then(() => { done(new Error('no error thrown')) })
         .catch((e) => { done() })
+    })
+  })
+
+  describe('listTables()', () => {
+    beforeEach((done) => {
+      dynamoed()
+        .createTable('users', {
+          key: [{id: 'string'}, {username: 'string'}]
+        })
+        .then(() => { done() })
+        .catch(done)
+    })
+
+    it('returns an array of names', function(done) {
+      dynamoed()
+        .listTables()
+        .then((tables) => {
+          assert.deepEqual(tables, ['users'])
+          done()
+        })
     })
   })
 })

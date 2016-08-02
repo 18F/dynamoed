@@ -35,4 +35,13 @@ class Wrapper {
         return parse.table(tableParams.TableDescription)
       })
   }
+
+  listTables() {
+    return this.client
+      .listTables()
+      .promise()
+      .then((names) => {
+        return names.TableNames
+      })
+  }
 }
