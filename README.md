@@ -1,5 +1,7 @@
 # Dynamoed, npm module
 
+<a href="https://codeclimate.com/github/18F/dynamoed"><img src="https://codeclimate.com/github/18F/dynamoed/badges/gpa.svg" /></a>
+
 [DynamoDB](https://aws.amazon.com/dynamodb/) is a NoSQL managed database
 service by AWS. The AWS SDK is full of bumps and bruising, so this is a
 light node module to allows developers to use promies and easier to
