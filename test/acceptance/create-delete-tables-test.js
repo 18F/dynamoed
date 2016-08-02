@@ -15,7 +15,7 @@ describe('Acceptance: create, update and delete tables', () => {
   })
 
   describe('createTable(name, options)', () => {
-    it('has works with a complex schema', (done) => {
+    it('works and returns a table representation', (done) => {
       dynamoed()
         .createTable('users', {
           key: [{id: 'string'}, {username: 'string'}]
@@ -25,6 +25,33 @@ describe('Acceptance: create, update and delete tables', () => {
           done()
         })
         .catch(done)
+    })
+  })
+
+  describe('deleteTable(name) when the table exists', () => {
+    beforeEach((done) => {
+      dynamoed()
+        .createTable('users', {
+          key: [{id: 'string'}, {username: 'string'}]
+        })
+        .then(() => { done() })
+        .catch(done)
+    })
+
+    it('does not throw an error', (done) => {
+      dynamoed()
+        .deleteTable('users')
+        .then((table) => { done() })
+        .catch((e) => done(e))
+    })
+  })
+
+  describe('deleteTable(name) when table does not exist', () => {
+    it('throws an error if the table exists', (done) => {
+      dynamoed()
+        .deleteTable('users')
+        .then(() => { done(new Error('no error thrown')) })
+        .catch((e) => { done() })
     })
   })
 })

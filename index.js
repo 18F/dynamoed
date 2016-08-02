@@ -32,7 +32,7 @@ class Wrapper {
       .deleteTable(serialize.deleteTable(name))
       .promise()
       .then((tableParams) => {
-        return parse.table(tableParams)
+        return parse.table(tableParams.TableDescription)
       })
   }
 }
