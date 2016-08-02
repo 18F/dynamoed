@@ -1,6 +1,7 @@
 # Dynamoed, npm module
 
 <a href="https://codeclimate.com/github/18F/dynamoed"><img src="https://codeclimate.com/github/18F/dynamoed/badges/gpa.svg" /></a>
+<a href="https://codeclimate.com/github/18F/dynamoed/coverage"><img src="https://codeclimate.com/github/18F/dynamoed/badges/coverage.svg" /></a>
 
 [DynamoDB](https://aws.amazon.com/dynamodb/) is a NoSQL managed database
 service by AWS. The AWS SDK is full of bumps and bruising, so this is a
@@ -10,6 +11,9 @@ grok options.
 ## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for additional information.
+
+Sending coverage to codeclimate requires an api key to be exposed in the
+shell. Before running `CODECLIMATE_REPO_TOKEN=MYAPITOKEN npm run send-to-codeclimate`
 
 ## Public domain
 
