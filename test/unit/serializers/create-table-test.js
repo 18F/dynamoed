@@ -16,6 +16,11 @@ describe('serializer: createTable', () => {
           {username: 'string'},
           {url: 'string'}
         ]
+      },
+      globalIndexes: {
+        users_something: [
+          {something: 'number'}
+        ]
       }
     }
   })
@@ -47,6 +52,7 @@ describe('serializer: createTable', () => {
 
   it('serialized key attributes', () => {
     delete attributes.localIndexes
+    delete attributes.globalIndexes
     params = createTable('users', attributes)
     assert.deepEqual(params.AttributeDefinitions, [
       {
@@ -85,11 +91,41 @@ describe('serializer: createTable', () => {
   })
 
   it('combines attributes for key and local indexes', function() {
+    delete attributes.globalIndexes
     params = createTable('users', attributes)
     assert.deepEqual(params.AttributeDefinitions, [
       { AttributeName: 'id', AttributeType: 'N' },
       { AttributeName: 'url', AttributeType: 'S' },
       { AttributeName: 'username', AttributeType: 'S' }
+    ])
+  })
+
+  it('creates global indexes correctly', () => {
+    params = createTable('users', attributes)
+    assert.deepEqual(params.GlobalSecondaryIndexes, [
+      {
+        IndexName: 'users_something',
+        KeySchema: [
+          { AttributeName: 'something', KeyType: 'HASH' }
+        ],
+        Projection: {
+          ProjectionType: 'ALL'
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: throughputDefaults.ReadCapacityUnits,
+          WriteCapacityUnits: throughputDefaults.WriteCapacityUnits
+        }
+      }
+    ])
+  })
+
+  it('combines attributes for key, local and global indexes', function() {
+    params = createTable('users', attributes)
+    assert.deepEqual(params.AttributeDefinitions, [
+      { AttributeName: 'id', AttributeType: 'N' },
+      { AttributeName: 'url', AttributeType: 'S' },
+      { AttributeName: 'username', AttributeType: 'S' },
+      { AttributeName: 'something', AttributeType: 'N' }
     ])
   })
 })
