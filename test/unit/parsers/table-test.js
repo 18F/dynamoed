@@ -112,10 +112,10 @@ describe('parser: table', () => {
     })
   })
 
-  xit('repacks the global indexes', () => {
+  it('repacks the global indexes', () => {
     assert.deepEqual(parsed.globalIndexes, {
       users_something: {
-        key: [{something: 'string', type: 'hash'}],
+        key: [{something: 'number', type: 'hash'}],
         throughput: {
           read: 1,
           write: 1
