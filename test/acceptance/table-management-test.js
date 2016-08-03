@@ -65,13 +65,42 @@ describe('Acceptance: create, delete and list tables', () => {
         .catch(done)
     })
 
-    it('returns an array of names', function(done) {
+    it('returns an array of names', (done) => {
       dynamoed()
         .listTables()
         .then((tables) => {
           assert.deepEqual(tables, ['users'])
           done()
         })
+    })
+  })
+
+  describe('describeTable(name)', () => {
+    beforeEach((done) => {
+      dynamoed()
+        .createTable('users', {
+          key: [{id: 'string'}, {username: 'string'}]
+        })
+        .then(() => { done() })
+        .catch(done)
+    })
+
+    it('returns a parsed table', (done) => {
+      dynamoed()
+        .describeTable('users')
+        .then((table) => {
+          assert.equal(table.name, 'users')
+          assert.deepEqual(table.key, [
+            {id: 'string', type: 'hash'},
+            {username: 'string', type: 'range'}
+          ])
+          assert.deepEqual(table.throughput, {
+            read: 1,
+            write: 1
+          })
+          done()
+        })
+        .catch(done)
     })
   })
 })

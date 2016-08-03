@@ -9,10 +9,18 @@ describe('parser: table', () => {
   beforeEach(() => {
     response = {
       "TableName": "users",
+      "TableStatus": 'ACTIVE',
+      "CreationDateTime": new Date('Wed Aug 03 2016 08:47:34 GMT-0700 (PDT)'),
       "ProvisionedThroughput": {
-        "ReadCapacityUnits": 3,
-        "WriteCapacityUnits": 1
+         "LastIncreaseDateTime": new Date('Wed Dec 31 1969 16:00:00 GMT-0800 (PST)'),
+         "LastDecreaseDateTime": new Date('Wed Dec 31 1969 16:00:00 GMT-0800 (PST)'),
+         "NumberOfDecreasesToday": 0,
+         "ReadCapacityUnits": 3,
+         "WriteCapacityUnits": 1
       },
+      "TableSizeBytes": 42,
+      "ItemCount": 1,
+      "TableArn": 'arn:aws:dynamodb:ddblocal:000000000000:table/users',
       "KeySchema": [
         {
           "AttributeName": "id",
@@ -123,5 +131,25 @@ describe('parser: table', () => {
         projection: 'all'
       }
     })
+  })
+
+  it('includes the status', () => {
+    assert.equal(parsed.status, 'active')
+  })
+
+  it('includes created at date', () => {
+    assert.equal(parsed.createdAt, response.CreationDateTime)
+  })
+
+  it('includes the size of the table in bytes', () => {
+    assert.equal(parsed.size, 42)
+  })
+
+  it('includes the record count', () => {
+    assert.equal(parsed.count, 1)
+  })
+
+  it('includes the table id', () => {
+    assert.equal(parsed.id, response.TableArn)
   })
 })
